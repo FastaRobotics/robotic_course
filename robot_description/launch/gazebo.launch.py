@@ -36,13 +36,22 @@ def generate_launch_description():
         ])
     )
 
-    bridge = Node(
+    bridge_topics = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
         parameters=[{
             'config_file': os.path.join(bringup_dir, 'config', 'gz_bridge.yaml'),
             'qos_overrides./tf_static.publisher.durability': 'transient_local',
         }],
+        output='screen'
+    )
+
+    bridge_service_control = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            '/world/depot/control@ros_gz_interfaces/srv/ControlWorld'
+        ],
         output='screen'
     )
 
@@ -126,7 +135,7 @@ def generate_launch_description():
         DeclareLaunchArgument('urdf_file',default_value=os.path.join(bringup_dir, 'src', 'description', 'test.urdf'),description='Whether to start RVIZ'),
         DeclareLaunchArgument('use_robot_state_pub',default_value='True',description='Whether to start the robot state publisher'),
         gz_resource_path,
-        gz_sim,bridge,
+        gz_sim, bridge_topics, bridge_service_control,
         start_robot_state_publisher_cmd,
         spawn_entity,
         rviz_node,
